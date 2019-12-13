@@ -8,6 +8,7 @@
 
 import os
 import argparse
+from tqdm import tqdm
 
 import cv2
 
@@ -25,11 +26,12 @@ def convert_bag_file(bag_file, output_dir, image_topic, safe_prefix=''):
 
     bag = rosbag.Bag(bag_file, "r")
 
-    os.makedirs(output_dir)
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
 
     bridge = CvBridge()
     count = 0
-    for topic, msg, t in bag.read_messages(topics=[image_topic]):
+    for topic, msg, t in tqdm(bag.read_messages(topics=[image_topic])):
         t = rospy.Time(msg.header.stamp.to_nsec())
         # print("{}.{}".format(msg.header.stamp.secs, msg.header.stamp.nsecs))
         # print(msg.header.stamp.to_nsec())
